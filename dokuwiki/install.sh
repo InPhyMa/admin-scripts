@@ -5,7 +5,7 @@ INSTALL_DIR="www"
 DATA_DIR=""
 CONFIRM_DELETE=false
 USE_REWRITE=false
-CLEANUP=false
+
 CLIENT_IP=$(echo $SSH_CLIENT | awk '{print $1}')
 
 # function for display help
@@ -28,7 +28,7 @@ if [ $# -eq 0 ];
 then
    DATA_DIR="";
 else
-    while getopts "i:dychr?" opt; do
+    while getopts "i:dyhr" opt; do
         case $opt in
         i) INSTALL_DIR="$OPTARG" ;;
         d)  if [[ ${!OPTIND} && ! ${!OPTIND} =~ ^- ]]; then
@@ -38,13 +38,14 @@ else
                 DATA_DIR="data"
             fi;;
         y) CONFIRM_DELETE=true ;;
-        c) CLEANUP=true ;;
         r) USE_REWRITE=true ;;
         :) help_message; exit 1;;
-        ? | h ) help_message; exit 1 ;;
+        h) help_message; exit 1 ;;
       esac
    done
 fi
+
+shopt -s dotglob
 
 # delete existing files in install dir if confirmed
 if [ -d "$INSTALL_DIR" ]; then
@@ -91,7 +92,6 @@ echo "===================================================="
 read -r
 
 # Move data directory (optional)
-shopt -s dotglob
 if [[ -n "$DATA_DIR" ]]; then
     if [[ -d "$DATA_DIR" ]]; then
         echo "Data directory '$DATA_DIR' exists."
@@ -113,7 +113,6 @@ if [[ -n "$DATA_DIR" ]]; then
     echo "Relative path to data: $REL_PATH"
     printf "\$conf['savedir'] = '%s';\n" "$REL_PATH" >> "$INSTALL_DIR/conf/local.protected.php"
 fi
-shopt -u dotglob
 
 echo "Delete install.php."
 rm -f "$INSTALL_DIR/install.php"
@@ -126,7 +125,7 @@ if [[ -f "$INSTALL_DIR/.htaccess.dist" ]]; then
     cp "$INSTALL_DIR/.htaccess.dist" "$INSTALL_DIR/.htaccess"
     echo "Standard .htaccess copied."
     # enable RewriteRules when -r is set
-    if [[ -n "$USE_REWRITE" ]]; then
+    if $USE_REWRITE; then
         sed -i '/^#RewriteEngine on/,/^##/ s/^#//' "$INSTALL_DIR/.htaccess"
         printf "\$conf['userewrite'] = 1;" >> "$INSTALL_DIR/conf/local.protected.php"
         echo "RewriteRules enabled."
@@ -134,6 +133,8 @@ if [[ -f "$INSTALL_DIR/.htaccess.dist" ]]; then
 else
     echo ".htaccess.dist not found."
 fi
+
+shopt -u dotglob
 
 echo "Delete myself."
 
