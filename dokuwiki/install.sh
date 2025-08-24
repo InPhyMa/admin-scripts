@@ -71,6 +71,8 @@ Deny from all
 Allow from $CLIENT_IP
 EOF
 
+shopt -s dotglob
+
 # Download the latest official DokuWiki
 echo "download dokuwiki-stable.tgz"
 wget -O dokuwiki.tgz https://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz
@@ -78,12 +80,10 @@ wget -O dokuwiki.tgz https://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.
 # Unpacking DokuWiki
 echo "Unpacking dokuwiki-stable.tgz"
 tar xf dokuwiki.tgz
-shopt -s dotglob
 mv dokuwiki-*/* "$INSTALL_DIR"/
-shopt -u dotglob
 rmdir dokuwiki-*
 echo "Delete dokuwiki-stable.tgz"
-rm -f okuwiki.tgz
+rm -f dokuwiki.tgz
 
 # Create data directory (optional)
 if [[ -n "$DATA_DIR" ]]; then
@@ -103,16 +103,12 @@ if [[ -n "$DATA_DIR" ]]; then
             rmdir "$INSTALL_DIR/data"
         fi
     fi
-    # count the path depth
-    DEPTH=$(echo "$INSTALL_DIR" | awk -F/ '{print NF}')
-    REL_PATH=""
-    for ((i=1; i<=DEPTH; i++)); do
-        REL_PATH="../$REL_PATH"
-    done
-    REL_PATH="${REL_PATH}${DATA_DIR}"
+    REL_PATH=$(realpath --relative-to="$INSTALL_DIR" "$DATA_DIR")
     echo "Relative path to data: $REL_PATH"
     printf "\$conf['savedir'] = '%s';\n" "$REL_PATH" >> "$INSTALL_DIR/conf/local.php"
 fi
+
+shopt -u dotglob
 
 echo "===================================================="
 echo "Now start the installation in your browser:"
