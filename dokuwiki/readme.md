@@ -26,9 +26,10 @@ bash install.sh -y -d -r
 
 **Detailed description of the -d option:** If -d is specified, the default directory "data" is created. If -d is specified with a directory, that directory is used. Without -d, the data directory remains in the installation path.
 
-The following settings are added to config/local.php (depending on the options).
+The file conf/local.protected.php is created and the following settings (depending on the options) are written into it.
 
 ```php
+<?php
 $conf['savedir'] = '../data';
 $conf['userewrite'] = 1;
 ```
