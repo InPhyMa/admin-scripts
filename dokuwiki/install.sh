@@ -130,7 +130,7 @@ if [[ -f "$INSTALL_DIR/.htaccess.dist" ]]; then
     # enable RewriteRules when -r is set
     if [[ -n "$USE_REWRITE" ]]; then
         sed -i '/^#RewriteEngine on/,/^##/ s/^#//' "$INSTALL_DIR/.htaccess"
-        printf "\$conf['userewrite'] = 1" >> "$INSTALL_DIR/conf/local.php"
+        printf "\$conf['userewrite'] = 1;" >> "$INSTALL_DIR/conf/local.php"
         echo "RewriteRules enabled."
     fi
 else
