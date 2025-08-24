@@ -111,7 +111,7 @@ if [[ -n "$DATA_DIR" ]]; then
     fi
     REL_PATH=$(realpath --relative-to="$INSTALL_DIR" "$DATA_DIR")
     echo "Relative path to data: $REL_PATH"
-    echo "<?php" >> "$INSTALL_DIR/conf/local.protected.php"
+    echo "<?php" > "$INSTALL_DIR/conf/local.protected.php"
     printf "\$conf['savedir'] = '%s';\n" "$REL_PATH" >> "$INSTALL_DIR/conf/local.protected.php"
 fi
 
