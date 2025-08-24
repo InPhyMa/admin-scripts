@@ -71,8 +71,6 @@ Deny from all
 Allow from $CLIENT_IP
 EOF
 
-shopt -s dotglob
-
 # Download the latest official DokuWiki
 echo "download dokuwiki-stable.tgz"
 wget -O dokuwiki.tgz https://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz
@@ -85,7 +83,15 @@ rmdir dokuwiki-*
 echo "Delete dokuwiki-stable.tgz"
 rm -f dokuwiki.tgz
 
-# Create data directory (optional)
+echo "===================================================="
+echo "Now start the installation in your browser:"
+echo "   https://DOMAIN.TLD/install.php"
+echo "Press [Enter] once the installation is complete."
+echo "===================================================="
+read -r
+
+# Move data directory (optional)
+shopt -s dotglob
 if [[ -n "$DATA_DIR" ]]; then
     if [[ -d "$DATA_DIR" ]]; then
         echo "Data directory '$DATA_DIR' exists."
@@ -107,15 +113,7 @@ if [[ -n "$DATA_DIR" ]]; then
     echo "Relative path to data: $REL_PATH"
     printf "\$conf['savedir'] = '%s';\n" "$REL_PATH" >> "$INSTALL_DIR/conf/local.php"
 fi
-
 shopt -u dotglob
-
-echo "===================================================="
-echo "Now start the installation in your browser:"
-echo "   https://DOMAIN.TLD/install.php"
-echo "Press [Enter] once the installation is complete."
-echo "===================================================="
-read -r
 
 echo "Delete install.php."
 rm -f "$INSTALL_DIR/install.php"
