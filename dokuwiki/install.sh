@@ -111,7 +111,7 @@ if [[ -n "$DATA_DIR" ]]; then
     fi
     REL_PATH=$(realpath --relative-to="$INSTALL_DIR" "$DATA_DIR")
     echo "Relative path to data: $REL_PATH"
-    printf "\$conf['savedir'] = '%s';\n" "$REL_PATH" >> "$INSTALL_DIR/conf/local.php"
+    printf "\$conf['savedir'] = '%s';\n" "$REL_PATH" >> "$INSTALL_DIR/conf/local.protected.php"
 fi
 shopt -u dotglob
 
@@ -128,11 +128,11 @@ if [[ -f "$INSTALL_DIR/.htaccess.dist" ]]; then
     # enable RewriteRules when -r is set
     if [[ -n "$USE_REWRITE" ]]; then
         sed -i '/^#RewriteEngine on/,/^##/ s/^#//' "$INSTALL_DIR/.htaccess"
-        printf "\$conf['userewrite'] = 1;" >> "$INSTALL_DIR/conf/local.php"
+        printf "\$conf['userewrite'] = 1;" >> "$INSTALL_DIR/conf/local.protected.php"
         echo "RewriteRules enabled."
     fi
 else
-    echo ".htaccess.dist not found - RewriteRules not enabled."
+    echo ".htaccess.dist not found."
 fi
 
 echo "Delete myself."
